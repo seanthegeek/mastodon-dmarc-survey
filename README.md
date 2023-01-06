@@ -3,7 +3,7 @@ A survey of DMARC deployment acoss the top 1000 Mastodon instances by number of 
 
 ## Motivation
 
-As Mastodon has exploded in popularity[popularity] spurred by Elon Musk's
+As Mastodon has exploded in [popularity] spurred by Elon Musk's
 takeover of Twitter, it has also become popular to send 
 phishing [emails][phishing] to instance users.
 A common phishing approach is to spoof the message from
