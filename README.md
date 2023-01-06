@@ -1,5 +1,5 @@
 # Mastodon DMARC Survey
-A survey of DMARC deployment across all domains hosting a public Mastodon instance.
+A survey of DMARC deployment acoss the top 1000 Mastodon instances by number of active users
 
 ## Motivation
 
@@ -21,16 +21,17 @@ instance administrators to implement DMARC on their domains as soon
 as possible.
 
 ## Methodology
-
-The [instances.social API][instances] provides a free way of listing details of all
-online instances. The [checkdmarc][checkdmarc] Python module is then used to retrieve,
-parse, and validate DMARC DNS records.
+ 
+Use [instances.social API][instances] to fetch a list of the top 1000
+instances by active user count,then use [checkdmarc][checkdmarc] to retrieve,
+parse, and validate DMARC DNS records for those .
 
 ## Licensing
 
 The source code is licensed under the [Apache License 2.0][LICENSE].
 
 Results and analysis posted here are licensed under the [Creative Commons Attribution 4.0 International Public License][cc-by-4.0]
+unless noted otherwise.
 
 [popularity]: https://web.archive.org/web/20221129122927/https://www.cnn.com/2022/11/05/tech/mastodon
 [phishing]: https://web.archive.org/web/20230106053517/https://mstdn.social/@stux/109603992325592066

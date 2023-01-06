@@ -12,9 +12,9 @@ import checkdmarc
 
 __version__ = "1.0.0"
 
-instance_csv_fields = ["name", "description", "email", "admin", "users",
-                       "active_users", "posts", "connections",
-                       "dmarc_policy"]
+instance_csv_fields = ["name", "description", "email", "admin",
+                       "active_users", "users", "posts",
+                       "connections", "dmarc_policy"]
 
 
 class MastodonInstancesClient:
@@ -53,7 +53,7 @@ def _main():
                           version=__version__)
         count_help = "The number of instances to check, based on the " \
                      "descending number of active users (0 for all)"
-        args.add_argument("--count", "-c", type=int, default=0,
+        args.add_argument("--count", "-c", type=int, default=1000,
                           help=count_help)
         args.add_argument("--json", "-j", action="store_true", help="Output in verbose JSON format")
         args.add_argument("--output", "-o", help="Redirect output to a file")
@@ -66,7 +66,7 @@ def _main():
             instance = instances[i]
             try:
                 dmarc_record = checkdmarc.get_dmarc_record(
-                    instance["name"])
+                    instance["name"], timeout=.5)
                 dmarc_policy = dmarc_record["parsed"]["tags"]["p"]["value"]
                 if dmarc_policy == "none":
                     dmarc_policy = "Monitoring only (p=none)"
@@ -104,7 +104,7 @@ def _main():
         csv_file.seek(0)
         output = csv_file.read()
     if args.output:
-        with open(args.output, "w", newline="\n") as output_file:
+        with open(args.output, "w", newline="\n", encoding="utf-32", errors="ignore") as output_file:
             output_file.write(output)
     else:
         print(output)
