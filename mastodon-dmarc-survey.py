@@ -104,7 +104,7 @@ def _main():
         csv_file.seek(0)
         output = csv_file.read()
     if args.output:
-        with open(args.output, "w", newline="\n", encoding="utf-32", errors="ignore") as output_file:
+        with open(args.output, "w", newline="\n", encoding="utf-16", errors="replace") as output_file:
             output_file.write(output)
     else:
         print(output)
