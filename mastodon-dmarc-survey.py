@@ -10,7 +10,7 @@ import simplejson
 from requests_toolbelt import user_agent, sessions
 import checkdmarc
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 instance_csv_fields = ["name", "description", "email", "admin",
                        "active_users", "users", "posts",
@@ -35,13 +35,13 @@ class MastodonInstancesClient:
         return self._session.get("instances/search", params=kwargs).json()["instances"]
 
     def get_instance(self, name):
-        return self._session.get("instances/show", params=dict(name=name)).json()["instances"]
+        return self._session.get("instances/show", params=dict(name=name)).json()
 
     def list_versions(self, **kwargs):
         return self._session.get("versions/list", params=kwargs).json()["versions"]
 
     def get_version(self, name):
-        return self._session.get("version/show", params=dict(name=name)).json()["versions"]
+        return self._session.get("version/show", params=dict(name=name)).json()
 
 
 def _main():
@@ -55,13 +55,17 @@ def _main():
                      "descending number of active users (0 for all)"
         args.add_argument("--count", "-c", type=int, default=1000,
                           help=count_help)
+        args.add_argument("--instance", "-i", help="Get information about a single specific instance")
         args.add_argument("--json", "-j", action="store_true", help="Output in verbose JSON format")
         args.add_argument("--output", "-o", help="Redirect output to a file")
         args = args.parse_args()
         client = MastodonInstancesClient(api_key)
-        instances = client.list_instances(count=args.count, include_down="false",
-                                          sort_by="active_users",
-                                          sort_order="desc")
+        if args.instance is None:
+            instances = client.list_instances(count=args.count, include_down="false",
+                                              sort_by="active_users",
+                                              sort_order="desc")
+        else:
+            instances = [client.get_instance(args.instance)]
         for i in range(len(instances)):
             instance = instances[i]
             try:
