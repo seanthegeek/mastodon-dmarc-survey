@@ -10,17 +10,18 @@ import simplejson
 from requests_toolbelt import user_agent, sessions
 import checkdmarc
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 instance_csv_fields = ["name", "description", "email", "admin",
-                       "active_users", "users", "posts",
-                       "connections", "dmarc_policy"]
+                       "logins_per_week", "users", "posts",
+                       "connections", "dnssec", "spf_valid", "dmarc_policy",
+                       "warnings", "errors"]
 
 
 class MastodonInstancesClient:
     def __init__(self, api_key):
-        headers = {"User-Agent": user_agent("checkdmarc-mastodon", __version__),
-                   "Authorization": f"Bearer {api_key}"}
+        headers = {"User-Agent": user_agent("cmastodon-dmarc-surveyn", __version__),
+                   "Authorization": "Bearer {}".format(api_key)}
         base_url = "https://instances.social/api/1.0/"
         self._session = sessions.BaseUrlSession(base_url=base_url)
         self._session.headers = headers
@@ -67,10 +68,24 @@ def _main():
         else:
             instances = [client.get_instance(args.instance)]
         for i in range(len(instances)):
+            errors = []
+            warnings = []
             instance = instances[i]
+            # Convert fields names to something more accurate
+            instance["posts"] = instance["statuses"]
+            del instance["statuses"]
+            instance["logins_per_week"] = instance["active_users"]
+            del instance["active_users"]
+            try:
+                dnssec = checkdmarc.test_dnssec(instance["name"])
+            except checkdmarc.DNSException:
+                dnssec = False
+            instance["dnssec"] = dnssec
             try:
                 dmarc_record = checkdmarc.get_dmarc_record(
                     instance["name"], timeout=.5)
+                for warning in dmarc_record["parsed"]["warnings"]:
+                    warnings.append("DMARC: {}".format(warning))
                 dmarc_policy = dmarc_record["parsed"]["tags"]["p"]["value"]
                 if dmarc_policy == "none":
                     dmarc_policy = "Monitoring only (p=none)"
@@ -78,23 +93,36 @@ def _main():
                     dmarc_policy = "Enforced (p=quarantine)"
                 elif dmarc_policy == "reject":
                     dmarc_policy = "Enforced (p=reject)"
-            except checkdmarc.DMARCRecordNotFound:
+            except checkdmarc.DMARCRecordNotFound as e:
                 dmarc_policy = "Missing"
-            except checkdmarc.DMARCError:
+            except checkdmarc.DMARCError as e:
                 dmarc_policy = "Invalid"
-            except checkdmarc.DNSException:
+                errors.append("DMARC: {}".format(str(e)))
+            except checkdmarc.DNSException as e:
                 dmarc_policy = "Invalid"
+                errors.append("DMARC: {}".format(str(e)))
+            instance["spf_valid"] = False
+            try:
+                spf_record = checkdmarc.get_spf_record(
+                    instance["name"], timeout=.5)
+                warnings += spf_record["warnings"]
+            except checkdmarc.SPFError as e:
+                errors.append("SPF: {}".format(e))
             instance["dmarc_policy"] = dmarc_policy
+            instance["errors"] = errors
+            instance["warnings"] = warnings
+
             instances[i] = instance
 
-    output = simplejson.dumps(instance)
+    output = simplejson.dumps(instances, indent=2)
     if not args.json:
         csv_file = StringIO(newline="\n")
         csv_writer = csv.DictWriter(csv_file, fieldnames=instance_csv_fields)
         csv_writer.writeheader()
         for instance in instances:
-            instance["posts"] = instance["statuses"]
             instance["description"] = ""
+            instance["errors"] = "|".join(instance["errors"])
+            instance["warnings"] = "|".join(instance["warnings"])
             if instance["info"] is not None:
                 try:
                     description = instance["info"]["short_description"]

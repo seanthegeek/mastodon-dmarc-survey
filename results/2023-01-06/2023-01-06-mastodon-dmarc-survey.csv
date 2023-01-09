@@ -1,4 +1,4 @@
-name,description,email,admin,active_users,users,posts,connections,dmarc_policy
+name,description,email,admin,logins_per_week,users,posts,connections,dmarc_policy
 mastodon.social,General-purpose server run by the lead developer of Mastodon,staff@mastodon.social,Gargron,99716,921068,47570302,47881,Enforced (p=quarantine)
 mstdn.social,,hello@mstdn.social,stux,34513,176030,7965462,42892,Monitoring only (p=none)
 mastodon.world,A general Mastodon instance,info@mastodon.world,mwadmin,32205,146772,1471533,37275,Enforced (p=quarantine)
