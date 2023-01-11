@@ -50,10 +50,11 @@ It is critical to ensure that all legitimate email sources sending as your domai
 domain before deploying DMARC with an enforced policy. For large organisations, identifying and configuring all of
 those sources can be challenging.
 
-Fortunately, most Mastodon instances are hosted on a dedicated domain with a few legitimate email sources. The easiest
-way to make sure that emails from your Mastodon instance pass DMARC is to deploy a monitor only DMARC policy
-record (p=none), nake each source email you (requestin, and checking the DMARC results in the message 
-`Authentication-Results` and/or `Authentication-Results-Origional` headers.
+Fortunately, most Mastodon instances are hosted on a dedicated domain with few, if any other legitimate email sources.
+The easiest way to make sure that emails from your Mastodon instance (or other source, such as a mail server) pass
+DMARC is to deploy a monitor only DMARC policy record (p=none), make each source email you (e.g, use the forgot password 
+feature to request a password reset email), and checking the DMARC results in the message `Authentication-Results`
+and/or `Authentication-Results-Origional` headers.
 
 For a more complete picture of who or what is sending as your domain, aggregate DMARC reports can be collected. These
 reports are sent by some (but not all) mail servers to let domain owners know what servers are sending as their domain.
