@@ -23,7 +23,7 @@ as possible.
 
 ## Methodology
  
-The Mastodon DMARC uses [instances.social API][instances] to fetch a list of the top 1000
+The Mastodon DMARC Survey  uses [instances.social API][instances] to fetch a list of the top 1000
 instances by active user count,then [checkdmarc][checkdmarc] used to retrieve,
 parse, and validate DNSSEC, SPF, and DMARC DNS records for those domains.
 
