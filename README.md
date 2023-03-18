@@ -12,7 +12,7 @@ domain, so the email falsy appears to come from a trusted domain
 when the recipient opens it.
 
 DMARC addresses this problem by providing receiving mail
-servers with the ability to ensure that an email came frm a source
+servers with the ability to ensure that an email came from a source
 authorized by the domain owner.
 
 This project is designed to allow end-users to quickly identify which
@@ -23,7 +23,7 @@ as possible.
 
 ## Methodology
  
-The Mastodon DMARC Survey  uses [instances.social API][instances] to fetch a list of the top 1000
+The Mastodon DMARC Survey uses the [instances.social API][instances] to fetch a list of the top 1000
 instances by active user count,then [checkdmarc][checkdmarc] used to retrieve,
 parse, and validate DNSSEC, SPF, and DMARC DNS records for those domains.
 
