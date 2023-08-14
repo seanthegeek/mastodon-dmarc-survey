@@ -21,29 +21,36 @@ instance_csv_fields = ["name", "description", "email", "admin",
 
 class MastodonInstancesClient:
     def __init__(self, api_key):
-        headers = {"User-Agent": user_agent("mastodon-dmarc-survey", __version__),
+        headers = {"User-Agent": user_agent("mastodon-dmarc-survey",
+                                            __version__),
                    "Authorization": "Bearer {}".format(api_key)}
         base_url = "https://instances.social/api/1.0/"
         self._session = sessions.BaseUrlSession(base_url=base_url)
         self._session.headers = headers
 
     def get_random_instances(self, **kwargs):
-        return self._session.get("instances/sample", params=kwargs).json()["instances"]
+        return self._session.get("instances/sample",
+                                 params=kwargs).json()["instances"]
 
     def list_instances(self, **kwargs):
-        return self._session.get("instances/list", params=kwargs).json()["instances"]
+        return self._session.get("instances/list",
+                                 params=kwargs).json()["instances"]
 
     def search_instances(self, **kwargs):
-        return self._session.get("instances/search", params=kwargs).json()["instances"]
+        return self._session.get("instances/search",
+                                 params=kwargs).json()["instances"]
 
     def get_instance(self, name):
-        return self._session.get("instances/show", params=dict(name=name)).json()
+        return self._session.get("instances/show",
+                                 params=dict(name=name)).json()
 
     def list_versions(self, **kwargs):
-        return self._session.get("versions/list", params=kwargs).json()["versions"]
+        return self._session.get("versions/list",
+                                 params=kwargs).json()["versions"]
 
     def get_version(self, name):
-        return self._session.get("version/show", params=dict(name=name)).json()
+        return self._session.get("version/show",
+                                 params=dict(name=name)).json()
 
 
 def _main():
@@ -54,16 +61,20 @@ def _main():
         args.add_argument("--version", "-V",
                           action="version",
                           version=__version__)
-        count_help = "The number of instances to check, based on the " \
-                     "descending number of active users (0 for all)"
         args.add_argument("--count", "-c", type=int, default=1000,
-                          help=count_help)
-        args.add_argument("--instance", "-i", help="Get information about a single specific instance")
-        args.add_argument("--json", "-j", action="store_true", help="Output in verbose JSON format")
-        args.add_argument("--output", "-o", help="Redirect output to a file")
-        args.add_argument("--debug", "-d", action="store_true", help="Enable debug output")
+                          help="The number of instances to check, based "
+                               "on the descending number of active users "
+                               "(0 for all)")
+        args.add_argument("--instance", "-i",
+                          help="Get information about a single specific "
+                               "instance")
+        args.add_argument("--json", "-j", action="store_true",
+                          help="Output in verbose JSON format")
+        args.add_argument("--output", "-o",
+                          help="Redirect output to a file")
+        args.add_argument("--debug", "-d", action="store_true",
+                          help="Enable debug output")
         args = args.parse_args()
-        log_level = logging.INFO
         if args.debug:
             log_level = logging.DEBUG
             logging.basicConfig(format='%(levelname)s: %(message)s',
@@ -72,7 +83,8 @@ def _main():
         client = MastodonInstancesClient(api_key)
         if args.instance is None:
             logging.debug("Getting the list of instances...")
-            instances = client.list_instances(count=args.count, include_down="false",
+            instances = client.list_instances(count=args.count,
+                                              include_down="false",
                                               sort_by="active_users",
                                               sort_order="desc")
         else:
@@ -150,7 +162,8 @@ def _main():
         csv_file.seek(0)
         output = csv_file.read()
     if args.output:
-        with open(args.output, "w", newline="\n", encoding="utf-8", errors="replace") as output_file:
+        with open(args.output, "w", newline="\n", encoding="utf-8",
+                  errors="replace") as output_file:
             output_file.write(output)
     else:
         print(output)
